@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome, Admin!</p>
+        <a href="{{ url_for('add_book') }}" class="btn btn-primary mb-3">Add New Book</a>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mb-3">Back to Home</a>
+    
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert alert-success">
+                    {% for category, message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    
+        <h2>Manage Books</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Price</th>
+                    <th>Stocks</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>{{ book[0] }}</td>
+                    <td>{{ book[1] }}</td>
+                    <td>{{ book[2] }}</td>
+                    <td>${{ book[3] }}</td>
+                    <td>
+                        <form action="{{ url_for('update_stock', book_id=book[0]) }}" method="post" class="form-inline">
+                            <input type="number" name="new_stock" value="{{ book[4] }}" class="form-control mr-2" min="0">
+                            <button type="submit" class="btn btn-success">Update</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="{{ url_for('remove_book', book_id=book[0]) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
