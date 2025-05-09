@@ -43,30 +43,30 @@ ALTER TABLE books ADD CONSTRAINT price_check CHECK (price > 0);
 ALTER TABLE order_items ADD CONSTRAINT quantity_check CHECK (quantity > 0);
 
 -- Triggers
--- DELIMITER $$
--- CREATE TRIGGER decrease_stock
--- AFTER INSERT ON order_items
--- FOR EACH ROW
--- BEGIN
---   UPDATE books
---   SET stock = stock - NEW.quantity
---   WHERE id = NEW.id;
--- END;$$
+DELIMITER $$
+CREATE TRIGGER decrease_stock
+AFTER INSERT ON order_items
+FOR EACH ROW
+BEGIN
+  UPDATE books
+  SET stock = stock - NEW.quantity
+  WHERE id = NEW.id;
+END;$$
 
--- CREATE TRIGGER prevent_out_of_stock
--- BEFORE INSERT ON order_items
--- FOR EACH ROW
--- BEGIN
---   DECLARE available_stock INT;
+CREATE TRIGGER prevent_out_of_stock
+BEFORE INSERT ON order_items
+FOR EACH ROW
+BEGIN
+  DECLARE available_stock INT;
 
---   SELECT stock INTO available_stock
---   FROM books
---   WHERE id = NEW.book_id;
+  SELECT stock INTO available_stock
+  FROM books
+  WHERE id = NEW.book_id;
 
---   IF available_stock < NEW.quantity THEN
---     SIGNAL SQLSTATE '45000'
---     SET MESSAGE_TEXT = 'Not enough stock available';
---   END IF;
--- END;$$
+  IF available_stock < NEW.quantity THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Not enough stock available';
+  END IF;
+END;$$
 DELIMITER ;
 
